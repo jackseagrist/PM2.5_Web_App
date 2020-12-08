@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_folium import folium_static
 import pandas as pd
 import plotly_express as px
 import folium
@@ -34,18 +35,21 @@ import tensorflow as tf
 # Load Model
 @st.cache(allow_output_mutation=True)
 def load_my_model():
-    model = tf.keras.models.load_model('all_v4')
+    model = tf.keras.models.load_model('all_v4_2')
+    #model._make_predict_function()
     model.summary()  # included to make it visible when model is reloaded
-    return model
+    #session = K.get_session()
+    return model#, session
 
 # Date selection
 today_date = datetime.date.today()
 day_limit = today_date + datetime.timedelta(days=-1)
-date = st.sidebar.date_input('Date', day_limit, max_value=day_limit)
+date = st.date_input('Date', max_value=day_limit)
 
 
 # Button to run prediction
-if st.sidebar.button('Run Prediction'):
+if st.button('Run Prediction'):
+    model = load_my_model()
     # ----- Part 1 CIMIS ----- #
     # CIMIS WEB API https://et.water.ca.gov/Rest/Index
     cimis_api = 'http://et.water.ca.gov/api/station/'  # API for individual station data
@@ -58,13 +62,11 @@ if st.sidebar.button('Run Prediction'):
     cimis_api_5 = '&dataItems='
 
     # previous day
-    today = datetime.datetime.today()
-    prev_day = today + datetime.timedelta(days=-1)
+    prev_day = date + datetime.timedelta(days=-1)
     prev_day = prev_day.strftime("%Y-%m-%d")
 
     # 3 days before
-    today = datetime.datetime.today()
-    prev_day3 = today + datetime.timedelta(days=-3)
+    prev_day3 = date + datetime.timedelta(days=-3)
     prev_day3 = prev_day3.strftime("%Y-%m-%d")
 
     targets = '157,254'  # ,253,104,111,211,171,191,178,213,157,187,109,144,158,83,170,247,47,139,121,212'  From file 47.0,77.0,83.0,103.0,104.0,109.0,111.0,121.0,139.0,144.0,157.0,158.0,171.0,178.0,187.0,191.0,211.0,212.0,213.0,247.0,253.0,254.0,
@@ -122,6 +124,7 @@ if st.sidebar.button('Run Prediction'):
         cimis_data_df.at[i, 'lat'] = lat
         cimis_data_df.at[i, 'lon'] = lon
 
+    st.write(cimis_data_df)
     # ----- Part 2 EPA -----#
     # Collect Air Pollution Data to predict
     # https://aqs.epa.gov/aqsweb/documents/data_api.html#signup
@@ -254,6 +257,7 @@ if st.sidebar.button('Run Prediction'):
     # cimis_data_df = cimis_data_df[cimis_data_df['station'] == station_one]
     # Drop Station Column
     cimis_data_df = cimis_data_df.drop(axis=1, labels=['station'])
+    st.write(cimis_data_df.head())
 
     values = cimis_data_df.values
     encoder = preprocessing.LabelEncoder()
@@ -268,12 +272,63 @@ if st.sidebar.button('Run Prediction'):
     values = reframed.values
     X = values[:, :-1]
     X = X.reshape((X.shape[0], 1, X.shape[1]))
-    st.write(X)
+
+    # ----- Predict ----- #
+    pred = model.predict(X)
+    X = X.reshape((X.shape[0], X.shape[2]))
+    inv_yhat = concatenate((pred, X[:, 1:]), axis=1)
+    inv_yhat = scaler.inverse_transform(inv_yhat)
+    inv_yhat = inv_yhat[:, 0]
+    inv_y = scaler.inverse_transform(X)
+    inv_y = inv_y[:, 0]
+
+
+    # ----- Add Values to Map ----- #
+    cimis_data_df = cimis_data_df.reset_index(inplace=False)
+
+    # Create Final dataframe for mapping
+    cimis_data_df['predictions'] = np.nan
+
+    for i in range(len(cimis_data_df) - 1):
+        value = float(inv_yhat[i])
+        cimis_data_df.at[i, 'predictions'] = value
+
+    cimis_data_df = cimis_data_df.dropna()
+
+    # Only show day 2 days ago
+    map_date = date
+    #map_date = map_date - datetime.timedelta(days=2)
+    map_date = map_date.strftime("%Y-%m-%d")
+
+    cimis_data_df_map = cimis_data_df[cimis_data_df['date'] == map_date]
+
+    base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
+
+    for i in range(len(cimis_data_df_map)):
+        row = cimis_data_df_map.iloc[i]
+        string = 'PM2.5 in micrograms/m^3' + '\n' + 'Predicted:' + str(
+            np.round(row['predictions'], decimals=1)) + '\n' + 'True:' + str(np.round(row['pollution'], decimals=1))
+        color_value = row['predictions']
+        if color_value < 50:
+            color = 'green'
+        elif 50 < color_value < 100:
+            color = 'yellow'
+        elif 100 < color_value < 150:
+            color = 'orange'
+        elif 150 < color_value:
+            color = 'red'
+        folium.CircleMarker(location=[row['lat'], row['lon']], radius=row['predictions'], popup=string, fill=True,
+                            color=color).add_to(base_map)
+    my_slot1.folium_static(base_map)
+    st.write(cimis_data_df_map.head())
+    st.write(cimis_data_df.head())
 
 def main():
-    model= load_my_model()
     st.header("PM 2.5 Forecasting")
     #st.subheader(“A demo on how to use Streamlit”)
-    st.image("images/Cal_tahoe.jpg", width=600)
+    #st.image("images/Cal_tahoe.jpg", width=600)
+    my_slot1 =st.empty()
+    base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
+    my_slot1.folium_static(base_map)
 if __name__ == "__main__":
     main()
