@@ -329,6 +329,5 @@ def main():
     #st.image("images/Cal_tahoe.jpg", width=600)
     my_slot1 =st.empty()
     base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
-    my_slot1.folium_static(base_map)
 if __name__ == "__main__":
     main()
