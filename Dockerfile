@@ -14,11 +14,16 @@ COPY README.md ./
 COPY setup.sh ./
 
 RUN chmod +x boot.sh
+SHELL ["/bin/bash", "-c"]
 
 RUN conda env create -f geostreamlit.yml
 
-RUN echo "source activate your-environment-name" &gt; ~/.bashrc
-ENV PATH /opt/conda/envs/geostreamlit/bin:$PATH
+#RUN echo "source activate geostreamlit" &gt; ~/.bashrc
+#ENV PATH /opt/conda/envs/geostreamlit/bin:$PATH
+RUN echo "source activate geostreamlit" > ~/.bashrc
+ENV PATH /opt/conda/envs/env/bin:$PATH
+
+#RUN conda activate geostreamlit
 
 EXPOSE 5000
 
