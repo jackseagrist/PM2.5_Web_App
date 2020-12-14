@@ -332,7 +332,7 @@ def main():
     st.header("PM 2.5 Forecasting")
     st.subheader("A demo on how to use Streamlit")
     st.image("images/Cal_tahoe.jpg", width=600)
-    base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
-    folium_static(base_map)
+    #base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
+    #folium_static(base_map)
 if __name__ == "__main__":
     main()
