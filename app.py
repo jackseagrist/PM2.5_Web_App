@@ -1,34 +1,10 @@
 import streamlit as st
-from streamlit_folium import folium_static
-import pandas as pd
-import plotly_express as px
-import folium
-from folium.plugins import HeatMap
-import seaborn as sns
-import pandas as pd
-import geopandas as gpd
-import numpy as np
-from pandas import read_csv
 import datetime
-from math import sqrt
 from numpy import concatenate
-from matplotlib import pyplot
-from pandas import read_csv
-from pandas import DataFrame
-from pandas import concat
 from sklearn import preprocessing
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import mean_squared_error
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import urllib.request
-import ast
-import csv
 import requests
 import tensorflow as tf
 
@@ -307,30 +283,30 @@ if st.button('Run Prediction'):
 
     cimis_data_df_map = cimis_data_df[cimis_data_df['date'] == map_date]
 
-    base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
+    #base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
 
-    for i in range(len(cimis_data_df_map)):
-        row = cimis_data_df_map.iloc[i]
-        string = 'PM2.5 in micrograms/m^3' + '\n' + 'Predicted:' + str(
-            np.round(row['predictions'], decimals=1)) + '\n' + 'True:' + str(np.round(row['pollution'], decimals=1))
-        color_value = row['predictions']
-        if color_value < 50:
-            color = 'green'
-        elif 50 < color_value < 100:
-            color = 'yellow'
-        elif 100 < color_value < 150:
-            color = 'orange'
-        elif 150 < color_value:
-            color = 'red'
-        folium.CircleMarker(location=[row['lat'], row['lon']], radius=row['predictions'], popup=string, fill=True,
-                            color=color).add_to(base_map)
-    folium_static(base_map)
+    #for i in range(len(cimis_data_df_map)):
+        #row = cimis_data_df_map.iloc[i]
+        #string = 'PM2.5 in micrograms/m^3' + '\n' + 'Predicted:' + str(
+            #np.round(row['predictions'], decimals=1)) + '\n' + 'True:' + str(np.round(row['pollution'], decimals=1))
+        #color_value = row['predictions']
+        #if color_value < 50:
+            #color = 'green'
+        #elif 50 < color_value < 100:
+            #color = 'yellow'
+        #elif 100 < color_value < 150:
+            #color = 'orange'
+        #elif 150 < color_value:
+            #color = 'red'
+        #folium.CircleMarker(location=[row['lat'], row['lon']], radius=row['predictions'], popup=string, fill=True,
+                            #color=color).add_to(base_map)
+    #folium_static(base_map)
     st.write(cimis_data_df_map.head())
     st.write(cimis_data_df.head())
 
 def main():
     st.header("PM 2.5 Forecasting")
-    st.subheader("A demo on how to use Streamlit")
+    st.subheader("Forecasting PM 2.5 concentration using an LSTM network")
     st.image("images/Cal_tahoe.jpg", width=600)
     #base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
     #folium_static(base_map)
