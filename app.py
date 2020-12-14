@@ -43,7 +43,7 @@ def load_my_model():
 
 # Date selection
 today_date = datetime.date.today()
-day_limit = today_date + datetime.timedelta(days=-1)
+day_limit = today_date #+ datetime.timedelta(days=-1)
 date = st.date_input('Date', max_value=day_limit)
 
 
@@ -62,7 +62,7 @@ if st.button('Run Prediction'):
     cimis_api_5 = '&dataItems='
 
     # previous day
-    prev_day = date + datetime.timedelta(days=-1)
+    prev_day = date + datetime.timedelta(days=0)
     prev_day = prev_day.strftime("%Y-%m-%d")
 
     # 3 days before
@@ -143,6 +143,7 @@ if st.button('Run Prediction'):
     epa_data_length = len(epa_data_json)
     epa_data_df = pd.DataFrame(columns=['date', 'pollution', 'SiteName', 'lat', 'lon'])
 
+    st.write("check")
     for i in range(epa_data_length):
         # Get individual data dictionay
         record = epa_data_json[i]
@@ -169,6 +170,8 @@ if st.button('Run Prediction'):
     # Loop through both stations and get np arrays of averages
     days = pd.date_range(start=prev_day3, end=prev_day, freq='D')
     epa_data_df_avg = pd.DataFrame(columns=['date', 'pollution', 'SiteName', 'lat', 'lon'])
+
+    st.write("check")
 
     for i in range(len(cimis_epa_dict.values())):
         # Get Site
@@ -201,6 +204,7 @@ if st.button('Run Prediction'):
         # Append to epa_data_df_avg
         epa_data_df_avg = epa_data_df_avg.append(station_df, ignore_index=True)
 
+    st.write("check")
     # Create mapping to populate all data into Cimis df
 
     for i in range(len(cimis_data_df)):
@@ -212,9 +216,10 @@ if st.button('Run Prediction'):
         filtered_epa = epa_data_df_avg[epa_data_df_avg['SiteName'] == epa_name]
         value = filtered_epa[filtered_epa['date'] == date]['pollution']
 
-        cimis_data_df.at[i, 'pollution']
-
         cimis_data_df.at[i, 'pollution'] = value
+
+    st.write("check")
+    st.write(cimis_data_df)
 
     # Do code to prep data
     cimis_data_df.set_index('date', inplace=True)
@@ -253,11 +258,11 @@ if st.button('Run Prediction'):
         return agg
 
     # Only Selecting One Station right now
+    #TODO don't drop station here, need to update and later for prediction
     # station_one = list(cimis_epa_dict.keys())[0]
     # cimis_data_df = cimis_data_df[cimis_data_df['station'] == station_one]
     # Drop Station Column
     cimis_data_df = cimis_data_df.drop(axis=1, labels=['station'])
-    st.write(cimis_data_df.head())
 
     values = cimis_data_df.values
     encoder = preprocessing.LabelEncoder()
@@ -298,7 +303,7 @@ if st.button('Run Prediction'):
     # Only show day 2 days ago
     map_date = date
     #map_date = map_date - datetime.timedelta(days=2)
-    map_date = map_date.strftime("%Y-%m-%d")
+    #map_date = date.strftime("%Y-%m-%d")
 
     cimis_data_df_map = cimis_data_df[cimis_data_df['date'] == map_date]
 
@@ -319,15 +324,15 @@ if st.button('Run Prediction'):
             color = 'red'
         folium.CircleMarker(location=[row['lat'], row['lon']], radius=row['predictions'], popup=string, fill=True,
                             color=color).add_to(base_map)
-    my_slot1.folium_static(base_map)
+    folium_static(base_map)
     st.write(cimis_data_df_map.head())
     st.write(cimis_data_df.head())
 
 def main():
     st.header("PM 2.5 Forecasting")
-    #st.subheader(“A demo on how to use Streamlit”)
-    #st.image("images/Cal_tahoe.jpg", width=600)
-    my_slot1 =st.empty()
+    st.subheader("A demo on how to use Streamlit")
+    st.image("images/Cal_tahoe.jpg", width=600)
     base_map = folium.Map([36.7783, -119.4179], zoom_start=6, tiles='cartodbpositron')
+    folium_static(base_map)
 if __name__ == "__main__":
     main()
