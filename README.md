@@ -5,7 +5,7 @@ For details on the dataset and model training, check out the [Project Repository
 
 ## Outline of project contents:
 
-1. app.py - Main application file. Web app built using [streamlit](https://www.streamlit.io/)
+1. app.py - Main application file. Web app built using [streamlit](https://www.streamlit.io/).
 
 2. all_v4_2 - Trained model from CS230 project.
 
