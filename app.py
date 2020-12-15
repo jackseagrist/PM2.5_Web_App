@@ -52,10 +52,7 @@ if __name__ == "__main__":
 @st.cache(allow_output_mutation=True)
 def load_my_model():
     model = tf.keras.models.load_model('all_v4_2')
-    #model._make_predict_function()
-    #model.summary()
-    #session = K.get_session()
-    return model#, session
+    return model
 
 # Date selection
 today_date = datetime.date.today()
@@ -93,7 +90,7 @@ if st.button('Run Prediction'):
         prev_day3 = date + datetime.timedelta(days=-3)
         prev_day3 = prev_day3.strftime("%Y-%m-%d")
 
-        targets = '157,254'  # ,253,104,111,211,171,191,178,213,157,187,109,144,158,83,170,247,47,139,121,212'  From file 47.0,77.0,83.0,103.0,104.0,109.0,111.0,121.0,139.0,144.0,157.0,158.0,171.0,178.0,187.0,191.0,211.0,212.0,213.0,247.0,253.0,254.0,
+        targets = '157,254'  # From file 47.0,77.0,83.0,103.0,104.0,109.0,111.0,121.0,139.0,144.0,157.0,158.0,171.0,178.0,187.0,191.0,211.0,212.0,213.0,247.0,253.0,254.0
         startDate = prev_day3
         endDate = prev_day
         dataItems = 'day-dew-pnt,day-air-tmp-avg,day-vap-pres-avg,day-wind-run,day-wind-spd-avg,day-precip'
