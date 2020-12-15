@@ -20,9 +20,9 @@ def main():
              'which allow people to take preventative measures and save lives.')
     st.markdown('#### Methods')
     st.write('An LSTM network was trained using CIMIS weather data and EPA air quality data. For the web application, '
-             'data is dynamically gathered using the APIs based on the selected date and location.')
+             'data is dynamically gathered using the APIs based on the selected date and location. [Source Code](https://github.com/jackseagrist/PM2.5_Web_App)')
 
-    st.write('For a complete description of the methods, please visit the project repository.')
+    st.write('For a complete description of the methods, please visit the class project repository.')
     st.markdown('[CS230 Project Github Repository](https://github.com/jackseagrist/Forecasting_PM25_LSTM)')
 
     st.markdown('### Instructions')
@@ -314,12 +314,14 @@ if st.button('Run Prediction'):
             cimis_data_df.at[i, 'predictions'] = value
 
         cimis_data_df = cimis_data_df.dropna()
+        predicted_value = np.round(cimis_data_df['predictions'].iloc[3],1)
+        true_value = np.round(cimis_data_df['pollution'].iloc[3],1)
 
         st.markdown("### PM2.5 (micrograms/meter^3) Results for " + str(date))
 
-        st.markdown("#### **Predicted**:   " + str(cimis_data_df['pollution'].iloc[3]))
+        st.markdown("#### **Predicted**:   " + str(predicted_value))
 
-        st.markdown('#### **True**:   ' + str(cimis_data_df['predictions'].iloc[3]))
+        st.markdown('#### **True**:   ' + str(true_value))
 
         st.success('Congrats, you predicted the air quality!')
 
