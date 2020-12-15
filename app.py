@@ -317,9 +317,9 @@ if st.button('Run Prediction'):
 
         st.markdown("### PM2.5 (micrograms/meter^3) Results for " + str(date))
 
-        st.markdown("#### **Predicted**:   " + str(cimis_data_df['pollution'].iloc[3]))
+        st.markdown("#### **Predicted**:   " + str(np.round(cimis_data_df['pollution'].iloc[3]),1))
 
-        st.markdown('#### **True**:   ' + str(cimis_data_df['predictions'].iloc[3]))
+        st.markdown('#### **True**:   ' + str(np.round(cimis_data_df['predictions'].iloc[3]),1))
 
         st.success('Congrats, you predicted the air quality!')
 
