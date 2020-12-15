@@ -314,7 +314,7 @@ if st.button('Run Prediction'):
         predicted_value = np.round(cimis_data_df['predictions'].iloc[3],1)
         true_value = np.round(cimis_data_df['pollution'].iloc[3],1)
 
-        st.markdown("### PM2.5 (micrograms/meter^3) Results for " + str(date))
+        st.markdown("### PM2.5 (micrograms/meter^3) Results")
 
         st.markdown("#### **Predicted**:   " + str(predicted_value))
 
