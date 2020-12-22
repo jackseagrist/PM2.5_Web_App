@@ -15,7 +15,7 @@ def main():
     sub_heading.subheader("Forecasting PM 2.5 concentration using an LSTM network")
     st.image('images/air_pollution.jpg', width=500)
     st.markdown('### Background Information')
-    st.write('Air Pollution poses serious health hazards, responsible for 7 million deaths annually which costs'
+    st.write('Air Pollution poses serious health hazards, responsible for 7 million deaths annually which costs '
              'the global economy $225 billion. Using existing data and deep learning, predictions can be made '
              'which allow people to take preventative measures and save lives.')
     st.markdown('#### Methods')
