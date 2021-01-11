@@ -27,8 +27,8 @@ def main():
 
     st.markdown('### Instructions')
     st.markdown("""1. Select a Date at least 2 days prior to today's date""")
-    st.markdown(""" 2. Click "Run Prediction" """)
-    st.markdown(""" 3. Select a Location """)
+    st.markdown(""" 2. Select a Location """)
+    st.markdown(""" 3. Click "Run Prediction" """)
     st.markdown('4. View results for selected Location!')
 
     st.markdown("""
@@ -98,7 +98,20 @@ if st.button('Run Prediction'):
 
         # Get data from CIMIS api
         full_request = cimis_api_1 + api_key + cimis_api_2 + targets + cimis_api_3 + startDate + cimis_api_4 + endDate + cimis_api_5 + dataItems + measure
-        cimis_data = requests.get(full_request)
+        
+        for retries in range(retry_count):
+            try:
+                cimis_data = requests.get(full_request)
+                break
+            except (requests.ConnectionError) as e:
+                if e.errno != 10054:
+                    continue
+                reconnect()
+        else:
+            st.error("Error: Could not complete API request, please try again later.")
+            cimis_cannot_connect = True
+            st.stop()
+        
         if cimis_data == None:
             st.error('Error: There is no data for that date, please pick another day.')
         else:
