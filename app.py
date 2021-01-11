@@ -99,6 +99,8 @@ if st.button('Run Prediction'):
         # Get data from CIMIS api
         full_request = cimis_api_1 + api_key + cimis_api_2 + targets + cimis_api_3 + startDate + cimis_api_4 + endDate + cimis_api_5 + dataItems + measure
         
+        retry_count = 2
+        
         for retries in range(retry_count):
             try:
                 cimis_data = requests.get(full_request)
@@ -109,7 +111,6 @@ if st.button('Run Prediction'):
                 reconnect()
         else:
             st.error("Error: Could not complete API request, please try again later.")
-            cimis_cannot_connect = True
             st.stop()
         
         if cimis_data == None:
