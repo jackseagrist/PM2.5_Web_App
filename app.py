@@ -116,7 +116,11 @@ if st.button('Run Prediction'):
         if cimis_data == None:
             st.error('Error: There is no data for that date, please pick another day.')
         else:
-            cimis_data_json = cimis_data.json()
+            try:
+                cimis_data_json = cimis_data.json()
+            except ValueError:
+                st.error('Error: Response content is not valid JSON')
+                st.stop()
 
         # Import latlon
         latlon = pd.read_csv('latlon_dict.csv')
